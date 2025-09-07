@@ -15,7 +15,7 @@ jobs:
       contents: write
     steps:
       - uses: taiki-e/checkout-action@v1
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
       - run: pip install pre-commit-mirror-maker
       - run: git config --global user.name 'Github Actions'
       - run: git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
