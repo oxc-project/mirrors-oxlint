@@ -1,10 +1,10 @@
 -   id: oxlint
-    name: oxlint
+    name: 'oxlint'
     description: 'Linter for the JavaScript Oxidation Compiler'
     entry: oxlint
     language: node
     'types_or': [javascript, jsx, ts, tsx]
     args: []
     require_serial: false
-    additional_dependencies: ["oxlint@1.74.0"]
+    additional_dependencies: ["oxlint@1.75.0"]
     minimum_pre_commit_version: '2.9.2'
