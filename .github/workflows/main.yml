@@ -16,7 +16,7 @@ jobs:
       pull-requests: write # Create and auto-merge the mirror PR.
     steps:
       - uses: taiki-e/checkout-action@7d1e50e93dc4fb3bba58f85018fadf77898aee8b # v1.4.2
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       - run: pip install pre-commit-mirror-maker
       - run: git config --global user.name 'Github Actions'
       - run: git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
