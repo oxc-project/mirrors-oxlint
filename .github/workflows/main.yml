@@ -17,6 +17,9 @@ jobs:
     steps:
       - uses: taiki-e/checkout-action@7d1e50e93dc4fb3bba58f85018fadf77898aee8b # v1.4.2
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - name: Capture mirrored version
+        id: current
+        run: echo "tag=v$(cat .version)" >> "$GITHUB_OUTPUT"
       - run: pip install pre-commit-mirror-maker
       - run: git config --global user.name 'Github Actions'
       - run: git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -27,6 +30,20 @@ jobs:
         with:
           client-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Publish tag for merged mirror state
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          MIRROR_TAG: ${{ steps.current.outputs.tag }}
+        run: |
+          git remote set-url origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY"
+
+          if git ls-remote --exit-code --tags origin "refs/tags/$MIRROR_TAG" >/dev/null; then
+            echo "Tag $MIRROR_TAG already exists"
+          else
+            git tag --force "$MIRROR_TAG" "$GITHUB_SHA"
+            git push origin "refs/tags/$MIRROR_TAG"
+          fi
 
       - name: Prepare mirror update
         id: mirror
@@ -39,10 +56,12 @@ jobs:
             exit 0
           fi
 
-          git remote set-url origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY"
+          final_tag="v$(cat .version)"
 
           for tag in $(git tag --list); do
-            if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+            if [ "$tag" = "$final_tag" ]; then
+              echo "Deferring tag $tag until its mirror update is merged"
+            elif git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
               echo "Tag $tag already exists"
             else
               git push origin "refs/tags/$tag"
