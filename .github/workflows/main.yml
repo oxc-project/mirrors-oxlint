@@ -32,6 +32,7 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Publish tag for merged mirror state
+        if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           MIRROR_TAG: ${{ steps.current.outputs.tag }}
